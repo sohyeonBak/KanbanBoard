@@ -1,0 +1,20 @@
+{
+  "name": "assignment-kanbanboard-server",
+  "version": "1.0.0",
+  "description": "This repository was created by sohyeon.",
+  "main": "index.js",
+  "scripts": {
+    "start": "json-server --routes routes.json db.json --port 4001",
+    "dev": "json-server --routes routes.json --watch db.json --port 4001"
+  },
+  "keywords": [
+    "assginment",
+    "kanban",
+    "test"
+  ],
+  "author": "sohyeon park",
+  "license": "ISC",
+  "dependencies": {
+    "json-server": "^0.17.4"
+  }
+}

@@ -1,0 +1,10 @@
+/node_modules
+/dist
+
+# debug
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+/.claude/
