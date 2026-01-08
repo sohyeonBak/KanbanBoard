@@ -1,1 +1,567 @@
-body { position: relative;;}
+body {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f6f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.kanban-column {
+  background-color: #ebecf0;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 280px;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: fit-content;
+  max-height: calc(100vh - 120px);
+}
+
+.kanban-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+  margin-bottom: 4px;
+}
+
+.kanban-column-header-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.kanban-column-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kanban-column-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #172b4d;
+  margin: 0;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.kanban-column-title:hover {
+  background-color: rgba(9, 30, 66, 0.08);
+}
+
+.kanban-column-title-input {
+  font-size: 14px;
+  font-weight: 600;
+  color: #172b4d;
+  margin: 0;
+  padding: 4px 8px;
+  border: 2px solid #0052cc;
+  border-radius: 4px;
+  outline: none;
+  background-color: #ffffff;
+  font-family: inherit;
+  width: 100%;
+  max-width: 180px;
+}
+
+.kanban-column-count {
+  background-color: #ffffff;
+  color: #5e6c84;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.kanban-column-delete-button {
+  background-color: transparent;
+  border: none;
+  color: #5e6c84;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.kanban-column-delete-button:hover {
+  background-color: #ffebe6;
+  color: #c9372c;
+}
+
+.kanban-column-delete-button svg {
+  display: block;
+}
+
+.kanban-column-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding: 2px;
+  min-height: 50px;
+}
+
+.kanban-column-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.kanban-column-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.kanban-column-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.kanban-column-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.board-container {
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.board-header {
+  margin-bottom: 24px;
+}
+
+.board-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #172b4d;
+  margin: 0;
+}
+
+.board-content {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+  flex: 1;
+}
+
+.board-content::-webkit-scrollbar {
+  height: 12px;
+}
+
+.board-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.board-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.board-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.board-loading,
+.board-error,
+.board-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  width: 100%;
+  font-size: 16px;
+  color: #5e6c84;
+}
+
+.board-error {
+  color: #c9372c;
+  background-color: #ffebe6;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.board-empty {
+  background-color: #ffffff;
+  border: 2px dashed #dfe1e6;
+  border-radius: 8px;
+  padding: 32px;
+}
+
+.kanban-card {
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kanban-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.kanban-card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #172b4d;
+  margin: 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.kanban-card-description {
+  font-size: 13px;
+  color: #5e6c84;
+  margin: 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kanban-card-due-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: fit-content;
+  background-color: #f4f5f7;
+  color: #5e6c84;
+}
+
+.kanban-card-due-date.due-soon {
+  background-color: #fff4e6;
+  color: #ff991f;
+}
+
+.kanban-card-due-date.due-today {
+  background-color: #ffebe6;
+  color: #ff5630;
+}
+
+.kanban-card-due-date.overdue {
+  background-color: #ffebe6;
+  color: #c9372c;
+  font-weight: 600;
+}
+
+.kanban-card-due-date-icon {
+  flex-shrink: 0;
+}
+
+.kanban-card-due-date-text {
+  line-height: 1;
+}
+
+.board-header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.add-column-button {
+  background-color: #0052cc;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.add-column-button:hover {
+  background-color: #0747a6;
+}
+
+.add-column-button:active {
+  background-color: #003d99;
+}
+
+.add-column-form {
+  background-color: #ebecf0;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 280px;
+  max-width: 280px;
+}
+
+.add-column-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #dfe1e6;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.add-column-input:focus {
+  border-color: #0052cc;
+}
+
+.add-column-error {
+  color: #c9372c;
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.add-column-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.add-column-submit {
+  background-color: #0052cc;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-column-submit:hover:not(:disabled) {
+  background-color: #0747a6;
+}
+
+.add-column-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.add-column-cancel {
+  background-color: transparent;
+  color: #5e6c84;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-column-cancel:hover:not(:disabled) {
+  background-color: rgba(9, 30, 66, 0.08);
+}
+
+.add-column-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(9, 30, 66, 0.54);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  min-width: 400px;
+  max-width: 500px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #172b4d;
+  margin: 0 0 12px 0;
+}
+
+.modal-message {
+  font-size: 14px;
+  color: #5e6c84;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.modal-button {
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal-button-cancel {
+  background-color: transparent;
+  color: #5e6c84;
+}
+
+.modal-button-cancel:hover:not(:disabled) {
+  background-color: rgba(9, 30, 66, 0.08);
+}
+
+.modal-button-confirm {
+  background-color: #c9372c;
+  color: #ffffff;
+}
+
+.modal-button-confirm:hover:not(:disabled) {
+  background-color: #ae2a19;
+}
+
+.modal-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.add-card-button {
+  background-color: transparent;
+  border: none;
+  color: #5e6c84;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.add-card-button:hover {
+  background-color: rgba(9, 30, 66, 0.08);
+}
+
+.add-card-form {
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.add-card-input {
+  width: 100%;
+  padding: 8px;
+  border: 2px solid #dfe1e6;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease;
+  margin-bottom: 8px;
+}
+
+.add-card-input:focus {
+  border-color: #0052cc;
+}
+
+.add-card-title-input {
+  font-weight: 500;
+}
+
+.add-card-description-input {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.add-card-error {
+  color: #c9372c;
+  font-size: 12px;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.add-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.add-card-submit {
+  background-color: #0052cc;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-card-submit:hover:not(:disabled) {
+  background-color: #0747a6;
+}
+
+.add-card-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.add-card-cancel {
+  background-color: transparent;
+  color: #5e6c84;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-card-cancel:hover:not(:disabled) {
+  background-color: rgba(9, 30, 66, 0.08);
+}
+
+.add-card-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
