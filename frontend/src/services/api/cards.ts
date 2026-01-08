@@ -30,4 +30,9 @@ export const cardsApi = {
   delete: async (id: string): Promise<void> => {
     await axios.delete(`/cards/${id}`);
   },
+
+  move: async (id: string, data: { target_column_id: string; new_order: number }): Promise<Card> => {
+    const response = await axios.patch<Card>(`/cards/${id}/move`, data);
+    return response.data;
+  },
 };

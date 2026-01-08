@@ -4,9 +4,12 @@ import { Card as CardType } from "../../services/types";
 interface CardProps {
   card: CardType;
   onClick?: () => void;
+  onDragStart?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragEnd?: (e: React.DragEvent<HTMLDivElement>) => void;
+  isDragging?: boolean;
 }
 
-const Card: React.FC<CardProps> = ({ card, onClick }) => {
+const Card: React.FC<CardProps> = ({ card, onClick, onDragStart, onDragEnd, isDragging }) => {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null;
     const date = new Date(dateString);
@@ -33,7 +36,13 @@ const Card: React.FC<CardProps> = ({ card, onClick }) => {
   const dueDateInfo = formatDate(card.due_date);
 
   return (
-    <div className="kanban-card" onClick={onClick}>
+    <div
+      className={`kanban-card ${dueDateInfo?.isOverdue ? "overdue" : ""} ${isDragging ? "dragging" : ""}`}
+      onClick={onClick}
+      draggable
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+    >
       <h3 className="kanban-card-title">{card.title}</h3>
       {card.description && (
         <p className="kanban-card-description">{card.description}</p>

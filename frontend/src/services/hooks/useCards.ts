@@ -64,3 +64,15 @@ export const useDeleteCard = () => {
     },
   });
 };
+
+export const useMoveCard = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: { target_column_id: string; new_order: number } }) =>
+      cardsApi.move(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [CARDS_QUERY_KEY] });
+    },
+  });
+};

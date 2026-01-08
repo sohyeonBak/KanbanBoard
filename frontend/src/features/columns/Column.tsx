@@ -5,13 +5,16 @@ import {
   useDeleteColumn,
 } from "../../services/hooks/useColumns";
 import { ConfirmModal } from "../../commons";
+import { AddCardForm } from "../cards";
 
 interface ColumnProps {
   column: ColumnType;
   children?: React.ReactNode;
+  onDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDrop?: (e: React.DragEvent<HTMLDivElement>) => void;
 }
 
-const Column: React.FC<ColumnProps> = ({ column, children }) => {
+const Column: React.FC<ColumnProps> = ({ column, children, onDragOver, onDrop }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(column.title);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -122,15 +125,18 @@ const Column: React.FC<ColumnProps> = ({ column, children }) => {
             </button>
           </div>
         </div>
-        <div className="kanban-column-content">
+        <div
+          className="kanban-column-content"
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+        >
           {children}
           {isAddingCard ? (
-            // <AddCardForm
-            //   columnId={column.id}
-            //   onClose={() => setIsAddingCard(false)}
-            //   nextOrder={cardCount}
-            // />
-            <></>
+            <AddCardForm
+              columnId={column.id}
+              onClose={() => setIsAddingCard(false)}
+              nextOrder={cardCount}
+            />
           ) : (
             <button
               className="add-card-button"

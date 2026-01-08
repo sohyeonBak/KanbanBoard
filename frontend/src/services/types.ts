@@ -9,7 +9,7 @@ export interface Card {
   id: string;
   column_id: string;
   title: string;
-  description: string;
+  description?: string;
   due_date: string | null;
   order: number;
   created_at: string;
@@ -32,6 +32,8 @@ export interface CreateCardDto {
   description?: string;
   due_date?: string | null;
   order: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UpdateCardDto {
@@ -40,4 +42,5 @@ export interface UpdateCardDto {
   description?: string;
   due_date?: string | null;
   order?: number;
+  updated_at?: string;
 }
