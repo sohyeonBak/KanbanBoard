@@ -4,6 +4,8 @@ import { useCards, useMoveCard } from "../../services/hooks/useCards";
 import { Column, AddColumnForm } from "../columns";
 import { Card, CardDetailPanel } from "../cards";
 import { Card as CardType } from "../../services/types";
+import { useToast } from "../../app/providers/ToastProvider";
+import { getErrorMessage } from "../../commons/utils/errorUtils";
 
 const Board: React.FC = () => {
   const [isAddingColumn, setIsAddingColumn] = useState(false);
@@ -12,9 +14,14 @@ const Board: React.FC = () => {
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
-  const { data: columns, isLoading: columnsLoading, error: columnsError } = useColumns();
+  const {
+    data: columns,
+    isLoading: columnsLoading,
+    error: columnsError,
+  } = useColumns();
   const { data: cards, isLoading: cardsLoading } = useCards();
   const moveCard = useMoveCard();
+  const { showError } = useToast();
 
   if (columnsLoading || cardsLoading) {
     return (
@@ -45,14 +52,16 @@ const Board: React.FC = () => {
       .sort((a, b) => a.order - b.order);
   };
 
-  const nextOrder = sortedColumns.length > 0
-    ? Math.max(...sortedColumns.map((col) => col.order)) + 1
-    : 0;
+  const nextOrder =
+    sortedColumns.length > 0
+      ? Math.max(...sortedColumns.map((col) => col.order)) + 1
+      : 0;
 
-  const handleDragStart = (card: CardType) => (e: React.DragEvent<HTMLDivElement>) => {
-    setDraggedCard(card);
-    e.dataTransfer.effectAllowed = "move";
-  };
+  const handleDragStart =
+    (card: CardType) => (e: React.DragEvent<HTMLDivElement>) => {
+      setDraggedCard(card);
+      e.dataTransfer.effectAllowed = "move";
+    };
 
   const handleDragEnd = () => {
     setDraggedCard(null);
@@ -60,61 +69,69 @@ const Board: React.FC = () => {
     setDragOverIndex(null);
   };
 
-  const handleDragOver = (columnId: string, index: number) => (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    setDragOverColumn(columnId);
-    setDragOverIndex(index);
-  };
+  const handleDragOver =
+    (columnId: string, index: number) =>
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      setDragOverColumn(columnId);
+      setDragOverIndex(index);
+    };
 
-  const handleColumnDragOver = (columnId: string) => (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    setDragOverColumn(columnId);
-    const columnCards = getCardsByColumnId(columnId);
-    setDragOverIndex(columnCards.length);
-  };
+  const handleColumnDragOver =
+    (columnId: string) => (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      setDragOverColumn(columnId);
+      const columnCards = getCardsByColumnId(columnId);
+      setDragOverIndex(columnCards.length);
+    };
 
-  const handleDrop = (columnId: string, dropIndex: number) => async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDrop =
+    (columnId: string, dropIndex: number) =>
+    async (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    if (!draggedCard) return;
+      if (!draggedCard) return;
 
-    const targetColumnCards = getCardsByColumnId(columnId);
-    let newOrder = dropIndex;
+      const targetColumnCards = getCardsByColumnId(columnId);
+      let newOrder = dropIndex;
 
-    // If dropping in the same column
-    if (draggedCard.column_id === columnId) {
-      const currentIndex = targetColumnCards.findIndex(c => c.id === draggedCard.id);
-      if (currentIndex === dropIndex) {
-        setDraggedCard(null);
-        setDragOverColumn(null);
-        setDragOverIndex(null);
-        return;
+      // If dropping in the same column
+      if (draggedCard.column_id === columnId) {
+        const currentIndex = targetColumnCards.findIndex(
+          (c) => c.id === draggedCard.id
+        );
+        if (currentIndex === dropIndex) {
+          setDraggedCard(null);
+          setDragOverColumn(null);
+          setDragOverIndex(null);
+          return;
+        }
+        // Adjust index if moving down in the same column
+        if (currentIndex < dropIndex) {
+          newOrder = dropIndex - 1;
+        }
       }
-      // Adjust index if moving down in the same column
-      if (currentIndex < dropIndex) {
-        newOrder = dropIndex - 1;
+
+      try {
+        await moveCard.mutateAsync({
+          id: draggedCard.id,
+          data: {
+            target_column_id: columnId,
+            new_order: newOrder,
+          },
+        });
+      } catch (error) {
+        console.error("Failed to move card:", error);
+        showError(getErrorMessage(error));
       }
-    }
 
-    try {
-      await moveCard.mutateAsync({
-        id: draggedCard.id,
-        data: {
-          target_column_id: columnId,
-          new_order: newOrder,
-        },
-      });
-    } catch (error) {
-      console.error("Failed to move card:", error);
-    }
-
-    setDraggedCard(null);
-    setDragOverColumn(null);
-    setDragOverIndex(null);
-  };
+      setDraggedCard(null);
+      setDragOverColumn(null);
+      setDragOverIndex(null);
+    };
 
   return (
     <div className="board-container">
@@ -142,50 +159,57 @@ const Board: React.FC = () => {
                 <Column
                   key={column.id}
                   column={column}
+                  cardCount={columnCards.length}
                   onDragOver={handleColumnDragOver(column.id)}
                   onDrop={handleDrop(column.id, columnCards.length)}
                 >
                   <>
-                    {columnCards.length === 0 ? (
-                      dragOverColumn === column.id && dragOverIndex === 0 && (
-                        <div
-                          className="drop-indicator"
-                          onDragOver={handleDragOver(column.id, 0)}
-                          onDrop={handleDrop(column.id, 0)}
-                        />
-                      )
-                    ) : (
-                      columnCards.map((card, index) => (
-                        <React.Fragment key={card.id}>
-                          {dragOverColumn === column.id && dragOverIndex === index && (
+                    {columnCards.length === 0
+                      ? dragOverColumn === column.id &&
+                        dragOverIndex === 0 && (
+                          <div
+                            className="drop-indicator"
+                            onDragOver={handleDragOver(column.id, 0)}
+                            onDrop={handleDrop(column.id, 0)}
+                          />
+                        )
+                      : columnCards.map((card, index) => (
+                          <React.Fragment key={card.id}>
+                            {dragOverColumn === column.id &&
+                              dragOverIndex === index && (
+                                <div
+                                  className="drop-indicator"
+                                  onDragOver={handleDragOver(column.id, index)}
+                                  onDrop={handleDrop(column.id, index)}
+                                />
+                              )}
                             <div
-                              className="drop-indicator"
                               onDragOver={handleDragOver(column.id, index)}
                               onDrop={handleDrop(column.id, index)}
-                            />
-                          )}
-                          <div
-                            onDragOver={handleDragOver(column.id, index)}
-                            onDrop={handleDrop(column.id, index)}
-                          >
-                            <Card
-                              card={card}
-                              onClick={() => !draggedCard && setSelectedCard(card)}
-                              onDragStart={handleDragStart(card)}
-                              onDragEnd={handleDragEnd}
-                              isDragging={draggedCard?.id === card.id}
-                            />
-                          </div>
-                          {dragOverColumn === column.id && dragOverIndex === index + 1 && (
-                            <div
-                              className="drop-indicator"
-                              onDragOver={handleDragOver(column.id, index + 1)}
-                              onDrop={handleDrop(column.id, index + 1)}
-                            />
-                          )}
-                        </React.Fragment>
-                      ))
-                    )}
+                            >
+                              <Card
+                                card={card}
+                                onClick={() =>
+                                  !draggedCard && setSelectedCard(card)
+                                }
+                                onDragStart={handleDragStart(card)}
+                                onDragEnd={handleDragEnd}
+                                isDragging={draggedCard?.id === card.id}
+                              />
+                            </div>
+                            {dragOverColumn === column.id &&
+                              dragOverIndex === index + 1 && (
+                                <div
+                                  className="drop-indicator"
+                                  onDragOver={handleDragOver(
+                                    column.id,
+                                    index + 1
+                                  )}
+                                  onDrop={handleDrop(column.id, index + 1)}
+                                />
+                              )}
+                          </React.Fragment>
+                        ))}
                   </>
                 </Column>
               );

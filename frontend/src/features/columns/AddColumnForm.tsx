@@ -1,35 +1,43 @@
 import React, { useState } from "react";
 import { useCreateColumn } from "../../services/hooks/useColumns";
+import { useToast } from "../../app/providers/ToastProvider";
+import { getErrorMessage } from "../../commons/utils/errorUtils";
 
 interface AddColumnFormProps {
   onClose: () => void;
   nextOrder: number;
 }
 
-const AddColumnForm: React.FC<AddColumnFormProps> = ({ onClose, nextOrder }) => {
+const AddColumnForm: React.FC<AddColumnFormProps> = ({
+  onClose,
+  nextOrder,
+}) => {
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
   const createColumn = useCreateColumn();
+  const { showSuccess, showError } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const trimmedTitle = title.trim();
-    if (!trimmedTitle) {
-      setError("Column title is required");
-      return;
-    }
+    // if (!trimmedTitle) {
+    //   setError("Column title is required");
+    //   return;
+    // }
 
     try {
       await createColumn.mutateAsync({
         title: trimmedTitle,
         order: nextOrder,
       });
+      showSuccess("Column created successfully");
       setTitle("");
       setError("");
       onClose();
     } catch (err) {
       setError("Failed to create column");
+      showError(getErrorMessage(err));
     }
   };
 

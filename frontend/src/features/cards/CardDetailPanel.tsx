@@ -3,6 +3,8 @@ import dayjs from "dayjs";
 import { Card as CardType } from "../../services/types";
 import { useCard, useUpdateCard, useDeleteCard } from "../../services/hooks/useCards";
 import { ConfirmModal } from "../../commons";
+import { useToast } from "../../app/providers/ToastProvider";
+import { getErrorMessage } from "../../commons/utils/errorUtils";
 
 interface CardDetailPanelProps {
   card: CardType;
@@ -28,6 +30,7 @@ const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card: initialCard, on
 
   const updateCard = useUpdateCard();
   const deleteCard = useDeleteCard();
+  const { showSuccess, showError } = useToast();
 
   useEffect(() => {
     if (currentCard) {
@@ -106,10 +109,12 @@ const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card: initialCard, on
           updated_at: dayjs().toISOString(),
         },
       });
+      showSuccess("Card updated successfully");
       setIsEditing(false);
       setErrors({});
     } catch (error) {
       console.error("Failed to update card:", error);
+      showError(getErrorMessage(error));
     }
   };
 
@@ -120,10 +125,12 @@ const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card: initialCard, on
   const handleConfirmDelete = async () => {
     try {
       await deleteCard.mutateAsync(currentCard.id);
+      showSuccess("Card deleted successfully");
       setShowDeleteModal(false);
       onClose();
     } catch (error) {
       console.error("Failed to delete card:", error);
+      showError(getErrorMessage(error));
     }
   };
 

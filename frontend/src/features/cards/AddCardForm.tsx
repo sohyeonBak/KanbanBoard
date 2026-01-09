@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
 import { useCreateCard } from "../../services/hooks/useCards";
+import { useToast } from "../../app/providers/ToastProvider";
+import { getErrorMessage } from "../../commons/utils/errorUtils";
 
 interface AddCardFormProps {
   columnId: string;
@@ -21,6 +23,7 @@ const AddCardForm: React.FC<AddCardFormProps> = ({
     description?: string;
   }>({});
   const createCard = useCreateCard();
+  const { showSuccess, showError } = useToast();
 
   const validateForm = () => {
     const newErrors: { title?: string; description?: string } = {};
@@ -58,6 +61,7 @@ const AddCardForm: React.FC<AddCardFormProps> = ({
         created_at: now,
         updated_at: now,
       });
+      showSuccess("Card created successfully");
       setTitle("");
       setDescription("");
       setDueDate("");
@@ -65,6 +69,7 @@ const AddCardForm: React.FC<AddCardFormProps> = ({
       onClose();
     } catch (err) {
       console.error("Failed to create card:", err);
+      showError(getErrorMessage(err));
     }
   };
 
@@ -107,12 +112,8 @@ const AddCardForm: React.FC<AddCardFormProps> = ({
             maxLength={101}
             autoFocus
           />
-          {errors.title && (
-            <div className="add-card-error">{errors.title}</div>
-          )}
-          <div className="add-card-char-count">
-            {title.length}/100
-          </div>
+          {errors.title && <div className="add-card-error">{errors.title}</div>}
+          <div className="add-card-char-count">{title.length}/100</div>
         </div>
 
         <div className="add-card-field">
@@ -129,9 +130,7 @@ const AddCardForm: React.FC<AddCardFormProps> = ({
           {errors.description && (
             <div className="add-card-error">{errors.description}</div>
           )}
-          <div className="add-card-char-count">
-            {description.length}/1000
-          </div>
+          <div className="add-card-char-count">{description.length}/1000</div>
         </div>
 
         <div className="add-card-field">

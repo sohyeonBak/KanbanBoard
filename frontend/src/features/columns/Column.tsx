@@ -6,15 +6,24 @@ import {
 } from "../../services/hooks/useColumns";
 import { ConfirmModal } from "../../commons";
 import { AddCardForm } from "../cards";
+import { useToast } from "../../app/providers/ToastProvider";
+import { getErrorMessage } from "../../commons/utils/errorUtils";
 
 interface ColumnProps {
   column: ColumnType;
+  cardCount: number;
   children?: React.ReactNode;
   onDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop?: (e: React.DragEvent<HTMLDivElement>) => void;
 }
 
-const Column: React.FC<ColumnProps> = ({ column, children, onDragOver, onDrop }) => {
+const Column: React.FC<ColumnProps> = ({
+  column,
+  cardCount,
+  children,
+  onDragOver,
+  onDrop,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(column.title);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -22,9 +31,7 @@ const Column: React.FC<ColumnProps> = ({ column, children, onDragOver, onDrop })
   const inputRef = useRef<HTMLInputElement>(null);
   const updateColumn = useUpdateColumn();
   const deleteColumn = useDeleteColumn();
-
-  const childrenArray = React.Children.toArray(children);
-  const cardCount = childrenArray.length;
+  const { showSuccess, showError } = useToast();
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -52,8 +59,10 @@ const Column: React.FC<ColumnProps> = ({ column, children, onDragOver, onDrop })
           id: column.id,
           data: { title: trimmedTitle },
         });
+        showSuccess("Column updated successfully");
       } catch (error) {
         setTitle(column.title);
+        showError(getErrorMessage(error));
       }
     }
 
@@ -80,9 +89,11 @@ const Column: React.FC<ColumnProps> = ({ column, children, onDragOver, onDrop })
   const handleConfirmDelete = async () => {
     try {
       await deleteColumn.mutateAsync(column.id);
+      showSuccess("Column deleted successfully");
       setShowDeleteModal(false);
     } catch (error) {
       console.error("Failed to delete column:", error);
+      showError(getErrorMessage(error));
     }
   };
 
