@@ -1,0 +1,20 @@
+{
+  "name": "assignment-kanbanboard",
+  "version": "1.0.0",
+  "description": "KanbanBoard Application - Server and Frontend",
+  "scripts": {
+    "start": "npm run start:server & npm run start:frontend",
+    "start:server": "cd server && npm start",
+    "start:frontend": "cd frontend && npm start",
+    "dev": "npm run start:server & npm run start:frontend",
+    "install:all": "npm install && cd server && npm install && cd ../frontend && npm install",
+    "build:frontend": "cd frontend && npm run build"
+  },
+  "keywords": [
+    "assignment",
+    "kanban",
+    "fullstack"
+  ],
+  "author": "sohyeon park",
+  "license": "ISC"
+}
