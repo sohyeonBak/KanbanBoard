@@ -7,7 +7,7 @@ import {
 import { ConfirmModal } from "../../commons";
 import { AddCardForm } from "../cards";
 import { useToast } from "../../app/providers/ToastProvider";
-import { getErrorMessage } from "../../commons/utils/errorUtils";
+import { getErrorMessage } from "../../services/errors/errorUtils";
 
 interface ColumnProps {
   column: ColumnType;

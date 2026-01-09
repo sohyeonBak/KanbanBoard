@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import dayjs from "dayjs";
 import { useCreateCard } from "../../services/hooks/useCards";
 import { useToast } from "../../app/providers/ToastProvider";
-import { getErrorMessage } from "../../commons/utils/errorUtils";
+import { getErrorMessage } from "../../services/errors/errorUtils";
 
 interface AddCardFormProps {
   columnId: string;

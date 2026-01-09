@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { Card as CardType } from "../../services/types";
-import { useCard, useUpdateCard, useDeleteCard } from "../../services/hooks/useCards";
+import {
+  useCard,
+  useUpdateCard,
+  useDeleteCard,
+} from "../../services/hooks/useCards";
 import { ConfirmModal } from "../../commons";
 import { useToast } from "../../app/providers/ToastProvider";
-import { getErrorMessage } from "../../commons/utils/errorUtils";
+import { getErrorMessage } from "../../services/errors/errorUtils";
 
 interface CardDetailPanelProps {
   card: CardType;
   onClose: () => void;
 }
 
-const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card: initialCard, onClose }) => {
+const CardDetailPanel: React.FC<CardDetailPanelProps> = ({
+  card: initialCard,
+  onClose,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -21,7 +28,9 @@ const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card: initialCard, on
   const [formData, setFormData] = useState({
     title: currentCard.title,
     description: currentCard.description || "",
-    due_date: currentCard.due_date ? dayjs(currentCard.due_date).format("YYYY-MM-DD") : "",
+    due_date: currentCard.due_date
+      ? dayjs(currentCard.due_date).format("YYYY-MM-DD")
+      : "",
   });
   const [errors, setErrors] = useState<{
     title?: string;
@@ -37,7 +46,9 @@ const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card: initialCard, on
       setFormData({
         title: currentCard.title,
         description: currentCard.description || "",
-        due_date: currentCard.due_date ? dayjs(currentCard.due_date).format("YYYY-MM-DD") : "",
+        due_date: currentCard.due_date
+          ? dayjs(currentCard.due_date).format("YYYY-MM-DD")
+          : "",
       });
     }
   }, [currentCard]);
@@ -88,7 +99,9 @@ const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card: initialCard, on
     setFormData({
       title: currentCard.title,
       description: currentCard.description || "",
-      due_date: currentCard.due_date ? dayjs(currentCard.due_date).format("YYYY-MM-DD") : "",
+      due_date: currentCard.due_date
+        ? dayjs(currentCard.due_date).format("YYYY-MM-DD")
+        : "",
     });
     setErrors({});
     setIsEditing(false);
@@ -184,7 +197,10 @@ const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card: initialCard, on
                   onChange={(e) => {
                     setFormData({ ...formData, description: e.target.value });
                     if (errors.description) {
-                      setErrors((prev) => ({ ...prev, description: undefined }));
+                      setErrors((prev) => ({
+                        ...prev,
+                        description: undefined,
+                      }));
                     }
                   }}
                   maxLength={1001}
@@ -226,7 +242,9 @@ const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card: initialCard, on
 
               <div className="card-detail-section">
                 <label className="card-detail-label">Due Date</label>
-                <div className="card-detail-value">{formatDate(currentCard.due_date)}</div>
+                <div className="card-detail-value">
+                  {formatDate(currentCard.due_date)}
+                </div>
               </div>
 
               <div className="card-detail-section">

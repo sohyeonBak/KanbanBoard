@@ -1,4 +1,4 @@
-import { BadRequestError } from '../errors';
+import { BadRequestError } from '../errors/errors';
 import { CreateCardDto } from '../types';
 
 export const validateCreateCard = (data: CreateCardDto): void => {

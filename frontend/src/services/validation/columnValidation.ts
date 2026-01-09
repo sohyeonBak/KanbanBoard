@@ -1,4 +1,4 @@
-import { BadRequestError } from '../errors';
+import { BadRequestError } from '../errors/errors';
 import { CreateColumnDto } from '../types';
 
 export const validateCreateColumn = (data: CreateColumnDto): void => {

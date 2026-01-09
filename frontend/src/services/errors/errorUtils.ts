@@ -1,4 +1,4 @@
-import { ApiError } from "../../services/errors";
+import { ApiError } from "./errors";
 
 export const getErrorMessage = (error: unknown): string => {
   if (error instanceof ApiError) {

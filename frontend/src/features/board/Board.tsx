@@ -5,7 +5,7 @@ import { Column, AddColumnForm } from "../columns";
 import { Card, CardDetailPanel } from "../cards";
 import { Card as CardType } from "../../services/types";
 import { useToast } from "../../app/providers/ToastProvider";
-import { getErrorMessage } from "../../commons/utils/errorUtils";
+import { getErrorMessage } from "../../services/errors/errorUtils";
 
 const Board: React.FC = () => {
   const [isAddingColumn, setIsAddingColumn] = useState(false);

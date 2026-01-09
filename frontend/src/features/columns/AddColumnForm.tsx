@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useCreateColumn } from "../../services/hooks/useColumns";
 import { useToast } from "../../app/providers/ToastProvider";
-import { getErrorMessage } from "../../commons/utils/errorUtils";
+import { getErrorMessage } from "../../services/errors/errorUtils";
 
 interface AddColumnFormProps {
   onClose: () => void;
